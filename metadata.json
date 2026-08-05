@@ -1,0 +1,6 @@
+{
+  "name": "Finora AI",
+  "description": "Your Personal AI Financial Advisor - Smart budgeting, intelligent analytics, AI recommendations, and local financial tracking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
