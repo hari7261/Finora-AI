@@ -37,23 +37,23 @@ private val FinoraLightColorScheme = lightColorScheme(
 )
 
 private val FinoraDarkColorScheme = darkColorScheme(
-    primary = Color(0xFFE8B2A0),
+    primary = Color(0xFFE5A99B),
     onPrimary = Color(0xFF3B1817),
-    primaryContainer = PrimaryFinora,
-    onPrimaryContainer = Color(0xFFFFDAD5),
+    primaryContainer = Color(0xFF3B1E1C),
+    onPrimaryContainer = Color(0xFFFFDAD6),
     secondary = SecondaryFinora,
     onSecondary = Color(0xFF381B27),
     secondaryContainer = Color(0xFF53313E),
     onSecondaryContainer = Color(0xFFFFD9E4),
     tertiary = AccentFinora,
     onTertiary = Color.White,
-    background = Color(0xFF181212),
-    onBackground = Color(0xFFEDE0DE),
-    surface = Color(0xFF221A1A),
-    onSurface = Color(0xFFEDE0DE),
-    surfaceVariant = Color(0xFF382C2C),
-    onSurfaceVariant = Color(0xFFD6C2BF),
-    outline = Color(0xFF524341)
+    background = Color(0xFF12131A),
+    onBackground = Color(0xFFE8E9F1),
+    surface = Color(0xFF1E202A),
+    onSurface = Color(0xFFE8E9F1),
+    surfaceVariant = Color(0xFF282A36),
+    onSurfaceVariant = Color(0xFFA0A3B5),
+    outline = Color(0xFF383A48)
 )
 
 @Composable
@@ -75,8 +75,8 @@ fun FinoraTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
+            window.statusBarColor = if (darkTheme) colorScheme.background.toArgb() else colorScheme.primary.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
 

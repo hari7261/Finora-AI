@@ -30,20 +30,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     init {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // Clear all tables and set up a clean profile without hardcoded sample data
-                database.financeDao().clearAllData()
-                database.financeDao().insertProfile(
-                    ProfileEntity(
-                        id = 1,
-                        name = "User",
-                        occupation = "Member",
-                        monthlyIncome = 0.0,
-                        currencySymbol = "₹",
-                        riskProfile = "Moderate",
-                        hasCompletedOnboarding = true,
-                        isDarkMode = false
+                if (database.financeDao().getProfileOneShot() == null) {
+                    database.financeDao().insertProfile(
+                        ProfileEntity(
+                            id = 1,
+                            name = "User",
+                            occupation = "Member",
+                            monthlyIncome = 0.0,
+                            currencySymbol = "₹",
+                            riskProfile = "Moderate",
+                            hasCompletedOnboarding = true,
+                            isDarkMode = false
+                        )
                     )
-                )
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -81,6 +81,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     val profile: StateFlow<ProfileEntity?> = repository.profile
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    val isDarkMode: StateFlow<Boolean> = repository.profile
+        .map { it?.isDarkMode ?: false }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     val aiMessages: StateFlow<List<AiMessageEntity>> = repository.aiMessages
         .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
@@ -328,6 +332,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 riskProfile = riskProfile,
                 currencySymbol = "₹"
             )
+            repository.updateProfile(updated)
+        }
+    }
+
+    fun toggleDarkMode() {
+        viewModelScope.launch {
+            val current = profile.value ?: ProfileEntity()
+            val updated = current.copy(isDarkMode = !current.isDarkMode)
             repository.updateProfile(updated)
         }
     }

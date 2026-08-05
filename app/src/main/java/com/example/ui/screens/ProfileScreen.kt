@@ -36,7 +36,7 @@ fun ProfileScreen(
     onNavigate: (CurrentScreen) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var isDarkMode by remember { mutableStateOf(profile?.isDarkMode ?: false) }
+    val isDarkMode by viewModel.isDarkMode.collectAsState()
     var notificationsEnabled by remember { mutableStateOf(true) }
     var smsReaderEnabled by remember { mutableStateOf(true) }
     var isExporting by remember { mutableStateOf(false) }
@@ -50,13 +50,13 @@ fun ProfileScreen(
             .fillMaxSize()
             .testTag("profile_screen"),
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        containerColor = BackgroundFinora,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             FinoraHeaderBar(
                 title = "Profile & Settings",
                 subtitle = user.occupation,
-                actionIcon = Icons.Default.Settings,
-                onActionClick = {}
+                actionIcon = if (isDarkMode) Icons.Default.LightMode else Icons.Default.DarkMode,
+                onActionClick = { viewModel.toggleDarkMode() }
             )
         }
     ) { innerPadding ->
@@ -238,11 +238,47 @@ fun ProfileScreen(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(1.dp, CardBorderFinora, RoundedCornerShape(20.dp)),
+                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(20.dp)),
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White)
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = if (isDarkMode) Icons.Default.DarkMode else Icons.Default.LightMode,
+                                contentDescription = "Dark Mode Toggle",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    "Dark Theme Mode",
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    if (isDarkMode) "Dark theme enabled across all screens" else "Light theme active",
+                                    fontSize = 11.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                        Switch(
+                            checked = isDarkMode,
+                            onCheckedChange = { viewModel.toggleDarkMode() },
+                            colors = SwitchDefaults.colors(checkedThumbColor = Color.White, checkedTrackColor = AccentFinora),
+                            modifier = Modifier.testTag("dark_mode_switch")
+                        )
+                    }
+
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp), color = MaterialTheme.colorScheme.outline)
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -252,8 +288,8 @@ fun ProfileScreen(
                             Icon(Icons.Default.Sms, contentDescription = null, tint = PrimaryFinora)
                             Spacer(modifier = Modifier.width(12.dp))
                             Column {
-                                Text("Real-Time Bank SMS Reader", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = PrimaryFinora)
-                                Text("Auto-detects debits, credits, amount & store", fontSize = 11.sp, color = Color.Gray)
+                                Text("Real-Time Bank SMS Reader", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface)
+                                Text("Auto-detects debits, credits, amount & store", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
                         Switch(
